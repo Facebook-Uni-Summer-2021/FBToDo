@@ -25,18 +25,30 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
          * Identify location of click to specify item to remove
          * @param position Index of item to remove
          */
-        void onItemLongClicked(int position);
+        void onItemLongClicked (int position);
+    }
+
+    public interface OnClickListener {
+        /**
+         * Identify location of click to specify item to update
+         * @param position Index of item to update
+         */
+        void onItemClicked (int position);
     }
 
     List<String> items;
     OnLongClickListener longClickListener;
+    OnClickListener clickListener;
 
     //Step 5. Create constructor (use "right click -> generate")
     //For constructor of adapter, including parameter as list of items, etc
     //(note that parameter is in function, argument is what goes in when called)
-    public ItemsAdapter (List<String> items, OnLongClickListener longClickListener) {
+    public ItemsAdapter (List<String> items,
+                         OnLongClickListener longClickListener,
+                         OnClickListener clickListener) {
         this.items = items;
         this.longClickListener = longClickListener;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -95,6 +107,14 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
                     //Notify listener which position was pressed
                     longClickListener.onItemLongClicked(getAdapterPosition());
                     return true;
+                }
+            });
+
+            //Create handler for updating items
+            tvItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    clickListener.onItemClicked(getAdapterPosition());
                 }
             });
         }

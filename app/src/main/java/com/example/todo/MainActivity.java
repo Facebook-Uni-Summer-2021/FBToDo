@@ -1,9 +1,11 @@
 package com.example.todo;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 //Android autofill imports wrong FileUtils, replace with following
 import org.apache.commons.io.FileUtils;
@@ -65,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
     Search "CodePath Android guide"
      */
     private static final String TAG = "MainActivity";
+
+    public static final String KEY_ITEM_TEXT = "item_text";
+    public static final String KEY_ITEM_POSITION = "item_position";
+    public static final int EDIT_TEXT_CODE = 1;
+
     List<String> items;
     ItemsAdapter adapter;
 
@@ -117,8 +124,24 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        ItemsAdapter.OnClickListener onClickListener = new ItemsAdapter.OnClickListener() {
+            @Override
+            public void onItemClicked(int position) {
+                Log.d(TAG, "Inside EditActivity on item " + position);
+                //Create new activity
+                Intent intent = new Intent(MainActivity.this,
+                        EditActivity.class);//Called wrong class
+                //Pass data updated
+                intent.putExtra(KEY_ITEM_TEXT, items.get(position));
+                intent.putExtra(KEY_ITEM_POSITION, position);
+                //Display activity
+                //startActivity(intent);
+                startActivityForResult(intent, EDIT_TEXT_CODE);
+            }
+        };
+
         //Complete steps to create adapter as seen in ItemsAdapter
-        adapter = new ItemsAdapter(items, onLongClickListener);
+        adapter = new ItemsAdapter(items, onLongClickListener, onClickListener);
         rvItems.setAdapter(adapter);
         rvItems.setLayoutManager(new LinearLayoutManager(this));
 
@@ -144,6 +167,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //Handle result of EditAcivity
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == EDIT_TEXT_CODE) {
+            //Retrieve updated text value
+            String itemText = data.getStringExtra(KEY_ITEM_TEXT);
+            //Extract original position
+            int position = data.getExtras().getInt(KEY_ITEM_POSITION);
+
+            //Get previous to notify change
+            String itemPrev = items.get(position);
+
+            //Update model at right position with new item text
+            items.set(position, itemText);
+            //Notify adapter
+            adapter.notifyItemChanged(position);
+            //Persist changes
+            saveItems();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Item was updated from \"" + itemPrev + "\"",
+                    Toast.LENGTH_SHORT).show();//MAKE SURE TO SHOW!!! AHHHHHHHHHHHHH
+            saveItems();
+        } else {
+            Log.w(TAG, "Unknown call to onActivityResult");
+        }
+    }
+
 
     //Create series of methods for controlling files and keeping persistence
 
