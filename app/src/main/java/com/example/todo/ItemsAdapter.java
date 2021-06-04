@@ -19,13 +19,24 @@ import java.util.List;
 //Step 4. Correct error when extending
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
 
+    //Handler onlongclicklistener removal of items from list
+    public interface OnLongClickListener {
+        /**
+         * Identify location of click to specify item to remove
+         * @param position Index of item to remove
+         */
+        void onItemLongClicked(int position);
+    }
+
     List<String> items;
+    OnLongClickListener longClickListener;
 
     //Step 5. Create constructor (use "right click -> generate")
     //For constructor of adapter, including parameter as list of items, etc
     //(note that parameter is in function, argument is what goes in when called)
-    public ItemsAdapter (List<String> items) {
+    public ItemsAdapter (List<String> items, OnLongClickListener longClickListener) {
         this.items = items;
+        this.longClickListener = longClickListener;
     }
 
     @NonNull
@@ -76,6 +87,16 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> 
             //Requires information from xml used for inflating view, which
             //were already declared in step 9
             tvItem.setText(item);
+
+            //Create handler for removing items
+            tvItem.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    //Notify listener which position was pressed
+                    longClickListener.onItemLongClicked(getAdapterPosition());
+                    return true;
+                }
+            });
         }
     }
 }
