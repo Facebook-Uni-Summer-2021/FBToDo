@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+XML is the creation of View in MVC. Can use Design or Code
+depending on preference
+
 Relative is easier; choose based on what is needed
 Disable blueprint?
 In design view, if magnet symbol has slash, widgets will not go as manually placed

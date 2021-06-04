@@ -1,8 +1,15 @@
 package com.example.todo;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     /*
@@ -45,11 +52,40 @@ public class MainActivity extends AppCompatActivity {
     Implement persistence
         Load model from file system on app startup
         Store to file system after changes
-     */
 
+    Search "CodePath Android guide"
+     */
+    List<String> items;
+
+    //Create respective object for each widget used in XML
+    Button btnAdd;
+    EditText etItem;
+    RecyclerView rvItems;
+
+    /**
+     * Signifies functions that run as activity is started. The main
+     * activity/class needs to be defined as such in Android Manifest
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Initialize/define member variables
+        btnAdd = findViewById(R.id.btnAdd);
+        etItem = findViewById(R.id.etItem);
+        rvItems = findViewById(R.id.rvItems);
+
+        //Initialize list for items, including mock data
+        items = new ArrayList<>();
+        items.add("Buy milk");
+        items.add("Pick up children from college");
+        items.add("Do some coding");
+
+        //Complete steps to create adapter as seen in ItemsAdapter
+        ItemsAdapter adapter = new ItemsAdapter(items);
+        rvItems.setAdapter(adapter);
+        rvItems.setLayoutManager(new LinearLayoutManager(this));
     }
 }
